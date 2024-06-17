@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>运动的星星</title>
+</head>
+
+<body onload="showStar()">
+    <canvas id="myCanvas" width="600px" height="400px">
+        你的浏览器不支持 canvas
+    </canvas>
+    <button id="btn" onclick="toggle()">Stop Canvas！</button>
+    <!-- <button id="b2" onclick="showStar()">Start to move！</button> -->
+</body>
+<script>
+    // 定义canvas
+    var canvas = document.getElementById('myCanvas');
+    let ctx = canvas.getContext('2d');
+    ctx.fillStyle = "gray";
+    ctx.fillRect(0, 0, 600, 400);
+
+    // 绘制五角星构造函数
+    function star(ctx, r, R, x, y, rotate) {
+        this.ctx = ctx;
+        this.r = r;
+        this.R = R;
+        this.x = x;
+        this.y = y;
+        this.ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+            let angle0 = 18 + i * 72 - rotate, angle1 = 54 + i * 72 - rotate;
+            this.ctx.lineTo(Math.cos(angle0 * Math.PI / 180) * this.R + this.x, -Math.sin(angle0 * Math.PI / 180) * this.R + this.y);
+            this.ctx.lineTo(Math.cos(angle1 * Math.PI / 180) * this.r + this.x, -Math.sin(angle1 * Math.PI / 180) * this.r + this.y);
+        }
+        this.ctx.lineWidth = "1";
+        this.ctx.fillStyle = "#fffd04";
+        // this.ctx.strokeStyle = "white";
+        this.ctx.closePath();//闭合当前点和第一个点
+        // this.ctx.stroke();//显示上面的画笔结果
+        this.ctx.fill();
+    }
+    //获取固定范围的随机值
+    function getRandom(min, max) {
+        return Math.random() * (max - min) + min
+    }
+    var timer;
+    var ismove = true
+
+    function toggle(){
+        var btn = document.getElementById('btn')
+        if(ismove) {
+            btn.innerText = "Start to move！"
+            console.log(11111);
+            stop()
+            ismove = false
+        } else {
+            btn.innerText = "Stop Canvas！"
+            showStar()
+            ismove = true
+        }
+    }
+    
+    function showStar() {
+        let objs = [];
+        var starNum = getRandom(30,80)
+        for (let i = 0; i < starNum; i++) {
+            let obj = {};
+            obj.x = getRandom(10, 590);
+            obj.y = getRandom(10, 390);
+            obj.rotate = getRandom(0, 180);
+            obj.speedX = getRandom(-1, 1);
+            obj.speedY = getRandom(-1, 1);
+            obj.r = getRandom(1, 2); 
+            objs.push(obj);
+            let star1 = new star(ctx, getRandom(4, 6)*obj.r, getRandom(9, 12)*obj.r, obj.x, obj.y, obj.rotate);
+        }
+
+        timer = setInterval(() => {
+            ctx.clearRect(0, 0, 600, 400)
+            ctx.fillStyle = "black";
+            ctx.fillRect(0, 0, 600, 400)
+            for (let i = 0; i < starNum; i++) {
+                objs[i].x = objs[i].x + objs[i].speedX
+                objs[i].y = objs[i].y + objs[i].speedY
+                if (objs[i].x > 590 || objs[i].x < 10) {
+                    objs[i].speedX *= -1
+                }
+                if (objs[i].y > 390 || objs[i].y < 10) {
+                    objs[i].speedY *= -1
+                }
+                let star1 = new star(ctx, 5* objs[i].r, 10* objs[i].r, objs[i].x, objs[i].y, objs[i].rotate);
+            }
+        }, 10);
+    }
+    function stop() {
+        clearInterval(timer);
+    }
+    
+</script>
+
+</html>
